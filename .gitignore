@@ -1,0 +1,8 @@
+# Ignore user-uploaded content
+admin/uploads/
+
+# Ignore dependency folders
+node_modules/
+
+# Ignore environment files
+.env
