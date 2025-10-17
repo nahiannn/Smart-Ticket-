@@ -2,21 +2,29 @@
 session_start();
 require_once '../db_connect.php';
 
-$booking_id = $_GET['booking_id'] ?? null;
-if (!$booking_id) {
+// USEING THE TRANSACTION ID
+$transaction_id = $_GET['trx_id'] ?? null;
+if (!$transaction_id) {
     echo "Invalid ticket.";
     exit;
 }
 
-// Fetch ticket and booking details
-$stmt = $conn->prepare("SELECT b.booking_id, b.seat_number, b.total_amount,
-                               m.title AS movie, t.name AS theater, s.show_time
+// Fetch ticket details using the transaction ID
+// Use GROUP_CONCAT to get all seat numbers in one string
+$stmt = $conn->prepare("SELECT
+                           GROUP_CONCAT(b.seat_number SEPARATOR ', ') AS seats, -- Get all seats
+                           b.transaction_id,
+                           SUM(b.total_amount) AS total_paid, -- Sum the amount for all seats
+                           m.title AS movie,
+                           t.name AS theater,
+                           s.show_time
                         FROM bookings b
                         JOIN movie_showtimes s ON b.showtime_id = s.showtime_id
                         JOIN movies m ON s.movie_id = m.movie_id
                         JOIN theaters t ON s.theater_id = t.theater_id
-                        WHERE b.booking_id = ?");
-$stmt->execute([$booking_id]);
+                        WHERE b.transaction_id = ?
+                        GROUP BY b.transaction_id, m.title, t.name, s.show_time"); // Group by the transaction
+$stmt->execute([$transaction_id]);
 $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$ticket) {
@@ -157,9 +165,9 @@ if (isset($_SESSION['pending_booking'])) {
     <p><strong>Movie:</strong> <?= htmlspecialchars($ticket['movie']) ?></p>
     <p><strong>Theater:</strong> <?= htmlspecialchars($ticket['theater']) ?></p>
     <p><strong>Show Time:</strong> <?= htmlspecialchars($ticket['show_time']) ?></p>
-    <p><strong>Seat(s):</strong> <?= htmlspecialchars($ticket['seat_number']) ?></p>
-    <p><strong>Amount Paid:</strong> ৳<?= number_format($ticket['total_amount'], 2) ?></p>
-    <p><strong>Ticket ID:</strong> #<?= str_pad($ticket['booking_id'], 6, '0', STR_PAD_LEFT) ?></p>
+    <p><strong>Seat(s):</strong> <?= htmlspecialchars($ticket['seats']) ?></p>
+<p><strong>Amount Paid:</strong> ৳<?= number_format($ticket['total_paid'], 2) ?></p>
+<p><strong>Transaction ID:</strong> #<?= htmlspecialchars($ticket['transaction_id']) ?></p>
   </div>
 
   <div class="text-center">
