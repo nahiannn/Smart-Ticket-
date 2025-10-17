@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            }
 
            $_SESSION['transaction_id'] = $transaction_id;
-           header("Location: ticket/ticket.php");
+           header("Location: ticket/ticket.php?trx_id=" . $transaction_id);
 
            exit;
        }
