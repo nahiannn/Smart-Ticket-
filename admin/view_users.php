@@ -259,7 +259,7 @@ $users = $usersStmt->fetchAll(PDO::FETCH_ASSOC);
        <a href="add_theater.php">🏛 Add Theater</a>
        <a href="add_museum.php?type=Add Movie_Theater">🖼 Add Museum</a>
        <a href="add_park.php?type=park">🌳 Add Park</a>
-       <a href="view_bookings.php">📄 View Bookings</a>
+       <a href="confirm_booking.php">📄 View Bookings</a>
        <a href="admin_login.php">🚪 Logout</a>
 </div>
 
