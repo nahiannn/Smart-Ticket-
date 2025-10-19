@@ -2,7 +2,11 @@
 session_start();
 require_once '../db_connect.php';
 
+<<<<<<< HEAD
 // USE THE TRANSACTION ID, NOT THE BOOKING ID
+=======
+// USEING THE TRANSACTION ID
+>>>>>>> b49eeb2d59a5eb827ede609d721ff0ed3cd3c1b7
 $transaction_id = $_GET['trx_id'] ?? null;
 if (!$transaction_id) {
     echo "Invalid ticket.";
